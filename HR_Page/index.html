@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Task Allocation - HRMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e0e7ff;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #ef233c;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #212529;
+            line-height: 1.5;
+            overflow: auto;
+        }
+
+        header {
+            position: relative;
+            text-align: center;
+            height: 110px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+        }
+
+        header h1 {
+            color: white;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header p {
+            font-weight: 300;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            max-width: 700px;
+            opacity: 0.9;
+            z-index: 2;
+        }
+
+        @keyframes moveCircles {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-50%) translateX(-50%); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        .banner-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: moveCircles 10s infinite linear;
+        }
+
+        .circle:nth-child(1) {
+            top: 10%;
+            left: 20%;
+            animation-duration: 8s;
+        }
+
+        .circle:nth-child(2) {
+            top: 50%;
+            left: 70%;
+            animation-duration: 12s;
+        }
+
+        .circle:nth-child(3) {
+            top: 80%;
+            left: 40%;
+            animation-duration: 15s;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ced4da;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .toggle-form-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            margin-bottom: 2px;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .toggle-form-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .task-form {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+        }
+
+        .task-form.hidden {
+            display: none;
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #212529;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        textarea.form-control {
+            resize: none;
+            min-height: 100px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .panel-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .employee-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .employee-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            background-color: #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .employee-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .employee-id {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .task-description {
+            color: #495057;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            resize: none;
+            border: none;
+            width: 100%;
+            background: transparent;
+            line-height: 1.5;
+        }
+
+        .task-dates {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+
+        .date-item {
+            flex: 1;
+        }
+
+        .date-label {
+            color: #6c757d;
+            margin-bottom: 3px;
+            font-size: 0.8rem;
+        }
+
+        .date-value {
+            font-weight: 500;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .status-assigned {
+            background-color: #e0e7ff;
+            color: var(--primary);
+        }
+
+        .status-inprocess {
+            background: #e5f6ff;
+            color: #0077ff;
+        }
+
+        .status-completed {
+            background: #e5ffe7;
+            color: #00aa33;
+        }
+
+        .history-container {
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        .history-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-info h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 1.1rem;
+            color: #212529;
+        }
+
+        .history-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .history-date {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state img {
+            width: 120px;
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .top-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-group {
+                margin-bottom: 10px;
+            }
+
+            .toggle-form-btn {
+                width: 100%;
+            }
+
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .panel-title {
+                font-size: 1.3rem;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .history-date {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="banner-background">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <h1>Task Allocation</h1>
+        <p>Assign and manage employee tasks</p>
+    </header>
+
+    <div class="container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Search and Allocate Button Row -->
+            <div class="top-controls">
+                <div class="search-group">
+                    <label for="searchInput" class="form-label"></label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name or ID">
+                    <button class="toggle-form-btn" id="toggleFormBtn">Allocate New Task</button>
+                </div>
+            </div>
+
+            <!-- Task Allocation Form -->
+            <div class="task-form hidden" id="taskFormContainer">
+                <h2 class="form-title">Allocate New Task</h2>
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskName" class="form-label">Task Name</label>
+                        <input type="text" id="taskName" class="form-control" required placeholder="Enter task name" minlength="3" maxlength="25">
+                        <span id="taskNameError" class="error-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeName" class="form-label">Employee Name</label>
+                        <input type="text" id="employeeName" class="form-control" required placeholder="Enter employee name" minlength="3" maxlength="30">
+                        <span id="employeeNameError" class="error-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeId" class="form-label">Employee ID</label>
+                        <input type="text" id="employeeId" class="form-control" required placeholder="Format: ABC0123" minlength="7" maxlength="7">
+                        <span id="employeeIdError" class="error-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription" class="form-label">Task Description</label>
+                        <textarea id="taskDescription" class="form-control" required placeholder="Describe the task" minlength="5" maxlength="60"></textarea>
+                        <span id="taskDescriptionError" class="error-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="allocatedDate" class="form-label">Allocated Date</label>
+                        <input type="date" id="allocatedDate" class="form-control" required>
+                        <span id="allocatedDateError" class="error-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="deadline" class="form-label">Deadline</label>
+                        <input type="date" id="deadline" class="form-control" required>
+                        <span id="deadlineError" class="error-message"></span>
+                    </div>
+                    <button type="submit" class="submit-btn">Allocate Task</button>
+                </form>
+            </div>
+
+            <!-- Allocated Tasks -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Allocated Tasks</h2>
+                </div>
+                <div class="task-grid" id="taskContainer">
+                    <!-- Task cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Work Updates -->
+            <div class="panel history-container">
+                <div class="panel-header">
+                    <h2 class="panel-title">Work Updates</h2>
+                </div>
+                <div id="workHistoryContainer">
+                    <!-- Work update items will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api';
+        let allTasks = []; // Store all tasks for filtering
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const taskForm = document.getElementById('taskForm');
+            const searchInput = document.getElementById('searchInput');
+            const toggleFormBtn = document.getElementById('toggleFormBtn');
+            const taskFormContainer = document.getElementById('taskFormContainer');
+
+            // Load tasks and work updates
+            loadTasks();
+            loadWorkUpdates();
+
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('allocatedDate').value = today;
+            document.getElementById('allocatedDate').min = today;
+            const maxAllocatedDate = new Date();
+            maxAllocatedDate.setMonth(maxAllocatedDate.getMonth() + 3);
+            document.getElementById('allocatedDate').max = maxAllocatedDate.toISOString().split('T')[0];
+            updateDeadlineConstraints();
+
+            // Event Listeners
+            toggleFormBtn.addEventListener('click', toggleForm);
+            taskForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                if (validateForm()) {
+                    await saveTask();
+                }
+            });
+
+            searchInput.addEventListener('input', filterTasks);
+
+            document.getElementById('allocatedDate').addEventListener('change', updateDeadlineConstraints);
+            document.getElementById('taskName').addEventListener('input', validateTaskName);
+            document.getElementById('employeeName').addEventListener('input', validateEmployeeName);
+            document.getElementById('employeeId').addEventListener('input', validateEmployeeId);
+            document.getElementById('taskDescription').addEventListener('input', validateTaskDescription);
+            document.getElementById('allocatedDate').addEventListener('change', validateAllocatedDate);
+            document.getElementById('deadline').addEventListener('change', validateDeadline);
+        });
+
+        function toggleForm() {
+            const taskFormContainer = document.getElementById('taskFormContainer');
+            const toggleFormBtn = document.getElementById('toggleFormBtn');
+            const isHidden = taskFormContainer.classList.contains('hidden');
+
+            if (isHidden) {
+                taskFormContainer.classList.remove('hidden');
+                toggleFormBtn.textContent = 'Close Form';
+            } else {
+                taskFormContainer.classList.add('hidden');
+                toggleFormBtn.textContent = 'Allocate New Task';
+            }
+        }
+
+        function updateDeadlineConstraints() {
+            const allocatedDate = document.getElementById('allocatedDate').value;
+            if (!allocatedDate) return;
+            const deadlineInput = document.getElementById('deadline');
+            deadlineInput.min = allocatedDate;
+            const maxDeadline = new Date(allocatedDate);
+            maxDeadline.setMonth(maxDeadline.getMonth() + 2);
+            deadlineInput.max = maxDeadline.toISOString().split('T')[0];
+            if (deadlineInput.value && deadlineInput.value < allocatedDate) {
+                deadlineInput.value = '';
+            }
+        }
+
+        // Validation Functions
+        function validateTaskName() {
+            const taskNameInput = document.getElementById('taskName');
+            const taskName = taskNameInput.value.trim();
+            const error = document.getElementById('taskNameError');
+            const pattern = /^[a-zA-Z0-9\s\-,.']{3,25}$/;
+            if (!taskName) {
+                error.textContent = 'Task name is required';
+                error.style.display = 'block';
+                taskNameInput.value = '';
+                return false;
+            } else if (!pattern.test(taskName)) {
+                error.textContent = 'Task name can only contain letters, numbers, spaces, hyphens, and basic punctuation (3-25 characters)';
+                error.style.display = 'block';
+                return false;
+            } else {
+                error.style.display = 'none';
+                taskNameInput.value = taskName;
+                return true;
+            }
+        }
+
+        function validateEmployeeName() {
+            const employeeNameInput = document.getElementById('employeeName');
+            const employeeName = employeeNameInput.value.trim();
+            const error = document.getElementById('employeeNameError');
+            const pattern = /^[a-zA-Z\s]{3,30}$/;
+            if (!employeeName) {
+                error.textContent = 'Employee name is required';
+                error.style.display = 'block';
+                employeeNameInput.value = '';
+                return false;
+            } else if (!pattern.test(employeeName)) {
+                error.textContent = 'Name can only contain letters and spaces (3-30 characters)';
+                error.style.display = 'block';
+                return false;
+            } else {
+                error.style.display = 'none';
+                employeeNameInput.value = employeeName;
+                return true;
+            }
+        }
+
+        function validateEmployeeId() {
+            const employeeIdInput = document.getElementById('employeeId');
+            const employeeId = employeeIdInput.value.trim().toUpperCase();
+            const error = document.getElementById('employeeIdError');
+            const pattern = /^[A-Z]{3}\d{4}$/;
+            if (!employeeId) {
+                error.textContent = 'Employee ID is required';
+                error.style.display = 'block';
+                employeeIdInput.value = '';
+                return false;
+            } else if (!pattern.test(employeeId)) {
+                error.textContent = 'Employee ID must be in format: ABC1234 (3 letters followed by 4 digits)';
+                error.style.display = 'block';
+                return false;
+            } else {
+                error.style.display = 'none';
+                employeeIdInput.value = employeeId;
+                return true;
+            }
+        }
+
+        function validateTaskDescription() {
+            const taskDescriptionInput = document.getElementById('taskDescription');
+            const description = taskDescriptionInput.value.trim();
+            const error = document.getElementById('taskDescriptionError');
+            const pattern = /^[a-zA-Z0-9\s\-,.']{5,60}$/;
+            if (!description) {
+                error.textContent = 'Description is required';
+                error.style.display = 'block';
+                taskDescriptionInput.value = '';
+                return false;
+            } else if (!pattern.test(description)) {
+                error.textContent = 'Description can only contain letters, numbers, spaces, and basic punctuation (5-60 characters)';
+                error.style.display = 'block';
+                return false;
+            } else if (description.length < 5) {
+                error.textContent = 'Description must be at least 5 characters';
+                error.style.display = 'block';
+                return false;
+            } else if (description.length > 60) {
+                error.textContent = 'Description cannot exceed 60 characters';
+                error.style.display = 'block';
+                return false;
+            } else {
+                error.style.display = 'none';
+                taskDescriptionInput.value = description;
+                return true;
+            }
+        }
+
+        function validateAllocatedDate() {
+            const allocatedDate = new Date(document.getElementById('allocatedDate').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const error = document.getElementById('allocatedDateError');
+            if (!allocatedDate) {
+                error.textContent = 'Please select an allocated date';
+                error.style.display = 'block';
+                return false;
+            } else if (allocatedDate < today) {
+                error.textContent = 'Allocated date cannot be in the past';
+                error.style.display = 'block';
+                return false;
+            } else {
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateDeadline() {
+            const deadline = new Date(document.getElementById('deadline').value);
+            const allocatedDate = new Date(document.getElementById('allocatedDate').value);
+            const error = document.getElementById('deadlineError');
+            if (!deadline) {
+                error.textContent = 'Please select a deadline';
+                error.style.display = 'block';
+                return false;
+            } else if (deadline < allocatedDate) {
+                error.textContent = 'Deadline must be after allocated date';
+                error.style.display = 'block';
+                return false;
+            } else {
+                error.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateForm() {
+            return (
+                validateTaskName() &&
+                validateEmployeeName() &&
+                validateEmployeeId() &&
+                validateTaskDescription() &&
+                validateAllocatedDate() &&
+                validateDeadline()
+            );
+        }
+
+        async function saveTask() {
+            const taskData = {
+                taskName: document.getElementById('taskName').value.trim(),
+                employeeName: document.getElementById('employeeName').value.trim(),
+                employeeId: document.getElementById('employeeId').value.trim().toUpperCase(),
+                taskDescription: document.getElementById('taskDescription').value.trim(),
+                allocatedDate: document.getElementById('allocatedDate').value,
+                deadline: document.getElementById('deadline').value,
+                status: 'assigned'
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (!response.ok) {
+                    let errorMessage = 'Failed to save task';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (jsonErr) {
+                        errorMessage = `Server error: ${response.status}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                document.getElementById('taskForm').reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('allocatedDate').value = today;
+                updateDeadlineConstraints();
+                await loadTasks();
+                alert('Task allocated successfully!');
+                toggleForm(); // Close form after submission
+            } catch (err) {
+                console.error('Error saving task:', err);
+                alert(`Error saving task: ${err.message}`);
+            }
+        }
+
+        async function loadTasks() {
+            const taskContainer = document.getElementById('taskContainer');
+            taskContainer.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                allTasks = await response.json();
+
+                filterTasks();
+            } catch (err) {
+                console.error('Error loading tasks:', err);
+                taskContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6c757d;">
+                        <p>Error loading tasks: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function filterTasks() {
+            const taskContainer = document.getElementById('taskContainer');
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            const filteredTasks = allTasks.filter(task => {
+                return (
+                    task.task_name.toLowerCase().includes(searchTerm) ||
+                    task.employee_name.toLowerCase().includes(searchTerm) ||
+                    task.employee_id.toLowerCase().includes(searchTerm)
+                );
+            });
+
+            taskContainer.innerHTML = '';
+
+            if (filteredTasks.length === 0) {
+                taskContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #6c757d;">
+                        <p>No tasks match your criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredTasks.forEach(task => {
+                if (!task) return;
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                const names = task.employee_name ? task.employee_name.split(' ') : ['?'];
+                const initials = names.map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                const status = task.status || 'assigned';
+                taskCard.innerHTML = `
+                    <div class="status-badge status-${status}">${status.toUpperCase()}</div>
+                    <div class="employee-info">
+                        <div class="employee-avatar">${initials}</div>
+                        <div>
+                            <div class="employee-name">${task.employee_name || 'Unknown'}</div>
+                            <div class="employee-id">${task.employee_id || 'ID Not Provided'}</div>
+                        </div>
+                    </div>
+                    <h3 class="task-title">${task.task_name || 'Untitled Task'}</h3>
+                    <textarea class="task-description" readonly>${task.task_description || 'No description provided'}</textarea>
+                    <div class="task-dates">
+                        <div class="date-item">
+                            <div class="date-label">Allocated</div>
+                            <div class="date-value">${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}</div>
+                        </div>
+                        <div class="date-item">
+                            <div class="date-label">Deadline</div>
+                            <div class="date-value">${task.deadline ? formatDate(task.deadline) : 'Not set'}</div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-primary" onclick="viewTaskDetails('${task.id}')">Details</button>
+                        <button class="btn btn-outline" onclick="downloadTask('${task.id}')">Download</button>
+                    </div>
+                `;
+                taskContainer.appendChild(taskCard);
+            });
+        }
+
+        async function loadWorkUpdates() {
+            const historyContainer = document.getElementById('workHistoryContainer');
+            historyContainer.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/task-history`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const taskHistory = await response.json();
+
+                if (taskHistory.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="empty-state">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
+                            <h3>No work updates yet</h3>
+                            <p>No work updates have been submitted by employees.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                taskHistory.forEach(task => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    let statusClass = task.task_status === 'inprocess' ? 'status-inprocess' : 'status-completed';
+                    historyItem.innerHTML = `
+                        <div class="history-info">
+                            <h4>${task.task_name}</h4>
+                            <p>Employee: ${task.employee_name} (${task.employee_id})</p>
+                            <span class="status-badge ${statusClass}">${task.task_status.toUpperCase()}</span>
+                        </div>
+                        <div class="history-date">
+                            ${formatDate(task.allocated_time)}
+                            <button class="btn btn-outline" onclick="downloadHistoryFile('${task.id}', '${task.task_name}')">Download File</button>
+                        </div>
+                    `;
+                    historyContainer.appendChild(historyItem);
+                });
+            } catch (err) {
+                console.error('Error loading work updates:', err);
+                historyContainer.innerHTML = `
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
+                        <h3>Error loading work updates</h3>
+                        <p>Unable to load work updates: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function downloadHistoryFile(id, taskName) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/task-history/${id}/file`);
+                if (!response.ok) {
+                    let errorMessage = 'File not found';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (jsonErr) {
+                        errorMessage = `Server error: ${response.status}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `work_update_${taskName.replace(/\s+/g, '_')}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Error downloading file:', err);
+                alert(`Error downloading file: ${err.message}`);
+            }
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Invalid date';
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            try {
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            } catch (e) {
+                return 'Invalid date';
+            }
+        }
+
+        async function viewTaskDetails(taskId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
+                if (!response.ok) {
+                    let errorMessage = 'Task not found';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (jsonErr) {
+                        errorMessage = `Server error: ${response.status}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+                const task = await response.json();
+                alert(`Task Details:\n\nName: ${task.task_name || 'Untitled Task'}\nEmployee: ${task.employee_name || 'Unknown'}\nID: ${task.employee_id || 'Not Provided'}\nStatus: ${task.status || 'Unknown'}\n\nDescription:\n${task.task_description || 'No description provided'}\n\nAllocated: ${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}\nDeadline: ${task.deadline ? formatDate(task.deadline) : 'Not set'}`);
+            } catch (err) {
+                console.error('Error fetching task details:', err);
+                alert(`Error fetching task details: ${err.message}`);
+            }
+        }
+
+        async function downloadTask(taskId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`);
+                if (!response.ok) {
+                    let errorMessage = 'Task not found';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch (jsonErr) {
+                        errorMessage = `Server error: ${response.status}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+                const task = await response.json();
+                const content = `
+                    Task Name: ${task.task_name || 'Untitled Task'}
+                    Employee: ${task.employee_name || 'Unknown'} (${task.employee_id || 'Not Provided'})
+                    Status: ${task.status || 'Unknown'}
+                    Description:
+                    ${task.task_description || 'No description provided'}
+                    Allocated Date: ${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}
+                    Deadline: ${task.deadline ? formatDate(task.deadline) : 'Not set'}
+                `;
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `task_${(task.task_name || 'untitled').replace(/\s+/g, '_')}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Error downloading task:', err);
+                alert(`Error downloading task: ${err.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
