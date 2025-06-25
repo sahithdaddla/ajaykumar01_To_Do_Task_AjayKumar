@@ -6,15 +6,15 @@ const path = require('path');
 const multer = require('multer');
 
 const app = express();
-const port = process.env.PORT || 3000; // Use PORT from .env or default to 3000
+const port = process.env.PORT || 3051; // Use PORT from .env or default to 3000
 const ipAddress = process.env.HOST || '0.0.0.0'; // Use HOST from .env or default to all interfaces
 
 // PostgreSQL connection configuration
 const pool = new Pool({
     user: process.env.DB_USER || 'postgres',
-    host: process.env.DB_HOST || 'localhost',
+    host: process.env.DB_HOST || 'postgres',
     database: process.env.DB_NAME || 'new_employee_db',
-    password: process.env.DB_PASSWORD || 'Password@12345',
+    password: process.env.DB_PASSWORD || 'admin123',
     port: process.env.DB_PORT || 5432,
 });
 
