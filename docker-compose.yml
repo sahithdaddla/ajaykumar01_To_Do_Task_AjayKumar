@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: ajay-postgres
+    environment:
+      POSTGRES_DB: new_employee_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5481:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql 
+    networks:
+      - ajay-net
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: ajay-backend
+    ports:
+      - "3051:3051"
+    env_file:
+      - ./Backend/server.env
+    depends_on:
+      - postgres
+    networks:
+      - ajay-net
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: ajay-frontend
+    ports:
+      - "8212:80"
+    networks:
+      - ajay-net
+
+  hr_page:
+    build:
+      context: ./HR_Page
+      dockerfile: Dockerfile
+    container_name: ajay-hr-page
+    ports:
+      - "8213:80"
+    networks:
+      - ajay-net
+
+volumes:
+  pgdata:
+
+networks:
+  ajay-net:
+    driver: bridge
+
