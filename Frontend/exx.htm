@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Allocation</title>
+    <style>
+        /* Unchanged styles from your provided employee.html */
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            color: #000000;
+        }
+        header {
+            position: relative;
+            text-align: center;
+            height: 120px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            width: 98%;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+        header p {
+            font-weight: 100;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        @keyframes moveCircles {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-50%) translateX(-50%); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+        .banner-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .circle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: moveCircles 10s infinite linear;
+        }
+        .circle:nth-child(1) {
+            top: 10%;
+            left: 20%;
+            animation-duration: 8s;
+        }
+        .circle:nth-child(2) {
+            top: 50%;
+            left: 70%;
+            animation-duration: 12s;
+        }
+        .circle:nth-child(3) {
+            top: 80%;
+            left: 40%;
+            animation-duration: 15s;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            height: 100%;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .panel-title {
+            display: flex;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #3a0098;
+        }
+        .work-items {
+            display: grid;
+            grid-template-columns: 1fr;
+            height: 600px;
+            overflow: auto;
+            gap: 1rem;
+        }
+        .work-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #6b19f0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .work-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .work-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #000000;
+        }
+        .work-project {
+            font-size: 0.9rem;
+            color: #6e48aa;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        .work-data {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #000000;
+        }
+        .work-data div {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .work-data i {
+            font-size: 1rem;
+            font-style: normal;
+            color: #000d9b;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        .status-pending {
+            background: #fff4e5;
+            color: #ff9500;
+        }
+        .status-inprocess {
+            background: #e5f6ff;
+            color: #0077ff;
+        }
+        .status-completed {
+            background: #e5ffe7;
+            color: #00aa33;
+        }
+        .status-assigned {
+            background: #e0e7ff;
+            color: #4361ee;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #000000;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #150389;
+        }
+        .form-select {
+            appearance: none;
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #2724d8 0%, #509ebb 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        .history-container {
+            height: 260px;
+            overflow: auto;
+            margin-top: 2rem;
+        }
+        .history-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-info h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 1.1rem;
+            color: #444;
+        }
+        .history-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #777;
+        }
+        .history-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+            color: #777;
+        }
+        .empty-state img {
+            width: 120px;
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+            .panel {
+                padding: 1rem;
+            }
+            .panel-title {
+                font-size: 1.3rem;
+            }
+            .work-card {
+                padding: 1rem;
+            }
+            .work-title {
+                font-size: 1.1rem;
+            }
+            .work-data {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode header {
+            background: linear-gradient(135deg, #3a0098 0%, #150389 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode header h1 {
+            color: white;
+        }
+        .dark-mode header p {
+            color: #dddddd;
+        }
+        .dark-mode .panel {
+            background: #1e1e1e;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode .panel-title {
+            color: #6400fa;
+        }
+        .dark-mode .work-card {
+            background: #252525;
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #4100a2;
+        }
+        .dark-mode .work-title {
+            color: #ffffff;
+        }
+        .dark-mode .work-project {
+            color: #ffffff;
+        }
+        .dark-mode .work-data i {
+            color: #ffffff;
+        }
+        .dark-mode .work-data {
+            color: white;
+        }
+        .dark-mode .form-control {
+            background: #252525;
+            color: #ffffff;
+            border: 1px solid #555;
+        }
+        .dark-mode label {
+            color: white;
+        }
+        .dark-mode .form-control:focus {
+            border-color: #a970ff;
+        }
+        .dark-mode .btn {
+            background: linear-gradient(135deg, #5724d8 0%, #509ebb 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode .history-item {
+            background: #252525;
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode .history-info h4 {
+            color: #ffffff;
+        }
+        .dark-mode .history-info p {
+            color: #ffffff;
+        }
+        .dark-mode .history-date {
+            color: #ffffff;
+        }
+        .dark-mode .empty-state {
+            color: #ffffff;
+        }
+        .dark-mode .error-message {
+            color: #ff8080;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="banner-background">
+            <div class="circle"></div>
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <h1>Work Allocation</h1>
+        <p>Track, manage and update your assigned work</p>
+    </header>
+    <div class="dashboard">
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Allocated Work</h2>
+            </div>
+            <div class="work-items" id="workItemsContainer">
+                <!-- Work items will be inserted here -->
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Submit Your Work</h2>
+            </div>
+            <form id="workUpdateForm">
+                <div class="form-group">
+                    <label for="task-name" class="form-label">Work Item Name</label>
+                    <input type="text" id="task-name" class="form-control" name="taskName" required minlength="5" placeholder="Enter Work Item name" maxlength="100">
+                </div>
+                <div class="error-message" id="task-name-error">Work Item name must be at least 5 characters long.</div>
+                <div class="form-group">
+                    <label for="employee-name" class="form-label">Employee Name</label>
+                    <input type="text" id="employee-name" class="form-control" name="employeeName" placeholder="Enter your Name" required 
+                           minlength="3" maxlength="100"
+                           pattern="^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$"
+                           title="Username cannot start with a space, no consecutive spaces allowed, maximum 8 spaces and 3 periods allowed.">
+                </div>
+                <div class="error-message" id="employee-name-error">Invalid employee name format.</div> 
+                <div class="form-group">
+                    <label for="employee-id" class="form-label">Employee ID</label>
+                    <input type="text" id="employee-id" class="form-control" name="employeeId" required minlength="7" maxlength="7" 
+                           placeholder="Enter Your ID" pattern="^[ATS]{3}(?!0000)[0-9]{4}$" 
+                           title="Employee ID should be in the format: 3 uppercase letters followed by 4 digits, starting from 0001 (cannot be 0000)">
+                </div>
+                <div class="error-message" id="employee-id-error">Employee ID must be in the format ABC1234.</div>
+                <div class="form-group">
+                    <label for="upload-doc" class="form-label">Upload Document</label>
+                    <input type="file" id="upload-doc" class="form-control" name="uploadDoc" required accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                           title="Acceptable file formats: PDF, DOC, DOCX, JPG, JPEG, PNG, TXT">
+                </div>
+                <div class="error-message" id="upload-doc-error">Please upload a valid file (PDF, DOC, DOCX, JPG, JPEG, PNG, TXT).</div>
+                <div class="form-group">
+                    <label for="task-status" class="form-label">Work Status</label>
+                    <select id="task-status" class="form-control form-select" name="taskStatus" required>
+                        <option value="completed">Completed</option>
+                        <option value="inprocess">In Progress</option>
+                    </select>
+                </div>
+                <div class="error-message" id="task-status-error">Please select a work status.</div>
+                <button type="submit" class="btn btn-block">Submit Work Update</button>
+            </form>
+        </div>
+    </div>
+    <div class="panel history-container">
+        <div class="panel-header">
+            <h2 class="panel-title" id="title">Work History</h2>
+        </div>
+        <div id="workHistoryContainer">
+            <!-- History items will be inserted here -->
+        </div>
+    </div>
+    <script>
+        const API_BASE_URL = 'http://51.21.167.155:3051/api';
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWorkItems();
+            loadHistory();
+            setupValidation();
+        });
+        async function loadWorkItems() {
+            const container = document.getElementById('workItemsContainer');
+            try {
+                const response = await fetch(`${API_BASE_URL}/tasks`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const tasks = await response.json();
+                if (tasks.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No work items">
+                            <h3>No work items assigned</h3>
+                            <p>You currently don't have any assigned work items</p>
+                        </div>
+                    `;
+                    return;
+                }
+                container.innerHTML = '';
+                tasks.forEach(task => {
+                    const workCard = document.createElement('div');
+                    workCard.className = 'work-card';
+                    let statusBadge = '';
+                    const status = task.status || 'assigned';
+                    if (status === 'pending') {
+                        statusBadge = '<span class="status-badge status-pending">Pending</span>';
+                    } else if (status === 'inprocess') {
+                        statusBadge = '<span class="status-badge status-inprocess">In Progress</span>';
+                    } else if (status === 'completed') {
+                        statusBadge = '<span class="status-badge status-completed">Completed</span>';
+                    } else {
+                        statusBadge = '<span class="status-badge status-assigned">Assigned</span>';
+                    }
+                    workCard.innerHTML = `
+                        ${statusBadge}
+                        <div class="work-project">HRMS Portal</div>
+                        <h3 class="work-title">${task.task_name}</h3>
+                        <div class="work-data">
+                            <div><i>📅</i> Assigned: ${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}</div>
+                            <div><i>⏰</i> Deadline: ${task.deadline ? formatDate(task.deadline) : 'Not set'}</div>
+                        </div>
+                    `;
+                    container.appendChild(workCard);
+                });
+            } catch (err) {
+                console.error('Error loading work items:', err);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No work items">
+                        <h3>Error loading work items</h3>
+                        <p>Unable to load assigned work items: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+        async function loadHistory() {
+            const historyContainer = document.getElementById('workHistoryContainer');
+            try {
+                const response = await fetch(`${API_BASE_URL}/task-history`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const taskHistory = await response.json();
+                if (taskHistory.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="empty-state">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
+                            <h3>No work history yet</h3>
+                            <p>Your submitted work updates will appear here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                historyContainer.innerHTML = '';
+                taskHistory.forEach(task => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    let statusClass = '';
+                    if (task.task_status === 'pending') {
+                        statusClass = 'status-pending';
+                    } else if (task.task_status === 'inprocess') {
+                        statusClass = 'status-inprocess';
+                    } else {
+                        statusClass = 'status-completed';
+                    }
+                    historyItem.innerHTML = `
+                        <div class="history-info">
+                            <h4>${task.task_name}</h4>
+                            <p>HRMS Portal • ${task.employee_name} (${task.employee_id})</p>
+                            <span class="status-badge ${statusClass}">${task.task_status}</span>
+                        </div>
+                        <div class="history-date">${formatDate(task.allocated_time)}</div>
+                    `;
+                    historyContainer.appendChild(historyItem);
+                });
+            } catch (err) {
+                console.error('Error loading history:', err);
+                historyContainer.innerHTML = `
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
+                        <h3>Error loading history</h3>
+                        <p>Unable to load work history: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+        async function saveCompletedTask(event) {
+            event.preventDefault();
+            if (!validateForm()) {
+                return;
+            }
+            const form = document.getElementById('workUpdateForm');
+            const formData = new FormData(form);
+            try {
+                const response = await fetch(`${API_BASE_URL}/task-history`, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+                }
+                const result = await response.json();
+                form.reset();
+                await loadHistory();
+                alert('Work update submitted successfully!');
+            } catch (err) {
+                console.error('Error submitting work update:', err);
+                alert(`Error submitting work update: ${err.message}`);
+            }
+        }
+        function setupValidation() {
+            const taskNameInput = document.getElementById('task-name');
+            const employeeNameInput = document.getElementById('employee-name');
+            const employeeIdInput = document.getElementById('employee-id');
+            const uploadDocInput = document.getElementById('upload-doc');
+            const taskStatusInput = document.getElementById('task-status');
+            const taskNameError = document.getElementById('task-name-error');
+            const employeeNameError = document.getElementById('employee-name-error');
+            const employeeIdError = document.getElementById('employee-id-error');
+            const uploadDocError = document.getElementById('upload-doc-error');
+            const taskStatusError = document.getElementById('task-status-error');
+            taskNameInput.addEventListener('input', function() {
+                taskNameError.style.display = this.value.length >= 5 ? 'none' : 'block';
+            });
+            employeeNameInput.addEventListener('input', function() {
+                const pattern = /^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$/;
+                employeeNameError.style.display = pattern.test(this.value.trim()) ? 'none' : 'block';
+            });
+            employeeIdInput.addEventListener('input', function() {
+                const pattern = /^[ATS]{3}(?!0000)[0-9]{4}$/;
+                employeeIdError.style.display = pattern.test(this.value.trim()) ? 'none' : 'block';
+            });
+            uploadDocInput.addEventListener('change', function() {
+                uploadDocError.style.display = this.files.length > 0 ? 'none' : 'block';
+            });
+            taskStatusInput.addEventListener('change', function() {
+                taskStatusError.style.display = this.value ? 'none' : 'block';
+            });
+            document.getElementById('workUpdateForm').addEventListener('submit', saveCompletedTask);
+        }
+        function validateForm() {
+            let isValid = true;
+            const taskName = document.getElementById('task-name').value;
+            if (taskName.length < 5) {
+                document.getElementById('task-name-error').style.display = 'block';
+                isValid = false;
+            }
+            const employeeName = document.getElementById('employee-name').value;
+            const namePattern = /^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$/;
+            if (!namePattern.test(employeeName.trim())) {
+                document.getElementById('employee-name-error').style.display = 'block';
+                isValid = false;
+            }
+            const employeeId = document.getElementById('employee-id').value;
+            const idPattern = /^[ATS]{3}(?!0000)[0-9]{4}$/;
+            if (!idPattern.test(employeeId.trim())) {
+                document.getElementById('employee-id-error').style.display = 'block';
+                isValid = false;
+            }
+            const uploadDoc = document.getElementById('upload-doc').files;
+            if (uploadDoc.length === 0) {
+                document.getElementById('upload-doc-error').style.display = 'block';
+                isValid = false;
+            }
+            const taskStatus = document.getElementById('task-status').value;
+            if (!taskStatus) {
+                document.getElementById('task-status-error').style.display = 'block';
+                isValid = false;
+            }
+            return isValid;
+        }
+        function formatDate(dateString) {
+            if (!dateString) return 'Invalid date';
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            try {
+                return new Date(dateString).toLocaleDateString('en-US', options);
+            } catch (e) {
+                return 'Invalid date';
+            }
+        }
+        window.onload = function () {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        };
+    </script>
+</body>
+</html>

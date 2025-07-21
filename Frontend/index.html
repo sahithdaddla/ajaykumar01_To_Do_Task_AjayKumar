@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Allocation</title>
+    <title>My Tasks - Employee Portal</title>
     <style>
-        /* Unchanged styles from your provided employee.html */
         * {
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
@@ -14,6 +13,7 @@
             margin: 0;
             padding: 20px;
             color: #000000;
+            background-color: #f5f5f5;
         }
         header {
             position: relative;
@@ -25,7 +25,7 @@
             overflow: hidden;
             display: flex;
             width: 98%;
-            margin-bottom: 20px;
+            margin: 0 auto 20px auto;
             align-items: center;
             justify-content: center;
             flex-direction: column;
@@ -45,6 +45,8 @@
             font-weight: 100;
             font-size: 18px;
             margin-top: 10px;
+            opacity: 0.9;
+            z-index: 2;
         }
         @keyframes moveCircles {
             0% { transform: translateY(0) translateX(0); }
@@ -83,6 +85,11 @@
             left: 40%;
             animation-duration: 15s;
         }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -92,7 +99,7 @@
         .panel {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             padding: 1.5rem;
             height: 100%;
         }
@@ -105,59 +112,62 @@
             border-bottom: 1px solid #eee;
         }
         .panel-title {
-            display: flex;
             margin: 0;
             font-size: 1.5rem;
             font-weight: 600;
             color: #3a0098;
         }
-        .work-items {
+        .task-grid {
             display: grid;
             grid-template-columns: 1fr;
-            height: 600px;
+            height: auto;
             overflow: auto;
             gap: 1rem;
         }
-        .work-card {
+        .task-card {
             background: white;
             border-radius: 10px;
             padding: 1.5rem;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
             border-left: 4px solid #6b19f0;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-        .work-card:hover {
+        .task-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        .work-title {
+        .task-title {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: #000000;
         }
-        .work-project {
+        .task-info {
             font-size: 0.9rem;
             color: #6e48aa;
             font-weight: 500;
             margin-bottom: 0.5rem;
         }
-        .work-data {
+        .task-dates {
             display: flex;
             gap: 1.5rem;
             margin-top: 1rem;
             font-size: 0.9rem;
             color: #000000;
         }
-        .work-data div {
+        .task-dates div {
             display: flex;
             align-items: center;
             gap: 0.3rem;
         }
-        .work-data i {
+        .task-dates i {
             font-size: 1rem;
             font-style: normal;
             color: #000d9b;
+        }
+        .task-actions {
+            display: flex;
+            gap: 10px;
         }
         .status-badge {
             display: inline-block;
@@ -183,6 +193,12 @@
             background: #e0e7ff;
             color: #4361ee;
         }
+        .update-form {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+        }
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -204,6 +220,14 @@
             outline: none;
             border-color: #150389;
         }
+        .form-control[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        textarea.form-control {
+            resize: none;
+            min-height: 100px;
+        }
         .form-select {
             appearance: none;
             background-repeat: no-repeat;
@@ -221,30 +245,103 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
         .btn:active {
             transform: translateY(0);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
         }
         .btn-block {
             display: block;
             width: 100%;
         }
+        .view-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #2724d8 0%, #509ebb 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+        .view-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .view-link:active {
+            transform: translateY(0);
+        }
+        .task-view-link, .file-view-link {
+            color: #00aa33;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .task-view-link:hover, .file-view-link:hover {
+            color: #008826;
+            text-decoration: underline;
+        }
+        .history-view-link {
+            color: #000d9b;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .history-view-link:hover {
+            color: #150389;
+            text-decoration: underline;
+        }
+        .file-input-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .file-input-label {
+            display: block;
+            padding: 0.8rem 1rem;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-input-label:hover {
+            border-color: #150389;
+            background-color: #f5f5f5;
+        }
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            overflow: hidden;
+        }
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #777;
+        }
         .history-container {
-            height: 260px;
             overflow: auto;
-            margin-top: 2rem;
         }
         .history-item {
             background: white;
             border-radius: 10px;
             padding: 1.5rem;
             margin-bottom: 1rem;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -267,6 +364,7 @@
             text-align: center;
             padding: 3rem 0;
             color: #777;
+            grid-column: 1 / -1;
         }
         .empty-state img {
             width: 120px;
@@ -276,12 +374,67 @@
         .error-message {
             color: red;
             font-size: 0.8rem;
-            margin-top: -1rem;
-            margin-bottom: 1rem;
+            margin-top: 0.2rem;
+            margin-bottom: 0.5rem;
             display: none;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #3a0098;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #777;
+        }
+        .modal-close:hover {
+            color: #d32f2f;
+        }
+        .modal-body {
+            font-size: 0.9rem;
+            color: #444;
+        }
+        .modal-body p {
+            margin-bottom: 1rem;
         }
         @media (max-width: 1024px) {
             .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .task-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -298,15 +451,22 @@
             .panel-title {
                 font-size: 1.3rem;
             }
-            .work-card {
+            .task-card,
+            .history-item {
                 padding: 1rem;
             }
-            .work-title {
+            .task-title {
                 font-size: 1.1rem;
             }
-            .work-data {
+            .task-dates {
                 flex-direction: column;
                 gap: 0.5rem;
+            }
+            .task-actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
             }
         }
         .dark-mode {
@@ -331,21 +491,25 @@
         .dark-mode .panel-title {
             color: #6400fa;
         }
-        .dark-mode .work-card {
+        .dark-mode .task-card,
+        .dark-mode .history-item {
             background: #252525;
             box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
             border-left: 4px solid #4100a2;
         }
-        .dark-mode .work-title {
+        .dark-mode .task-title,
+        .dark-mode .history-info h4 {
             color: #ffffff;
         }
-        .dark-mode .work-project {
+        .dark-mode .task-info,
+        .dark-mode .history-info p {
             color: #ffffff;
         }
-        .dark-mode .work-data i {
+        .dark-mode .task-dates i {
             color: #ffffff;
         }
-        .dark-mode .work-data {
+        .dark-mode .task-dates,
+        .dark-mode .history-date {
             color: white;
         }
         .dark-mode .form-control {
@@ -353,29 +517,56 @@
             color: #ffffff;
             border: 1px solid #555;
         }
-        .dark-mode label {
+        .dark-mode .form-label {
             color: white;
         }
         .dark-mode .form-control:focus {
             border-color: #a970ff;
+        }
+        .dark-mode .file-input-label {
+            border-color: #555;
+        }
+        .dark-mode .file-input-label:hover {
+            border-color: #a970ff;
+            background: #333;
+        }
+        .dark-mode .file-name {
+            color: #dddddd;
         }
         .dark-mode .btn {
             background: linear-gradient(135deg, #5724d8 0%, #509ebb 100%);
             color: white;
             box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
         }
-        .dark-mode .history-item {
-            background: #252525;
-            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.1);
+        .dark-mode .task-view-link, .dark-mode .file-view-link {
+            color: #00cc44;
+            text-decoration: underline;
         }
-        .dark-mode .history-info h4 {
+        .dark-mode .task-view-link:hover, .dark-mode .file-view-link:hover {
+            color: #00a33a;
+        }
+        .dark-mode .history-view-link {
+            color: #a970ff;
+            text-decoration: underline;
+        }
+        .dark-mode .history-view-link:hover {
+            color: #d1a3ff;
+        }
+        .dark-mode .modal-content {
+            background: #1e1e1e;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode .modal-title {
+            color: #6400fa;
+        }
+        .dark-mode .modal-body {
             color: #ffffff;
         }
-        .dark-mode .history-info p {
-            color: #ffffff;
+        .dark-mode .modal-close {
+            color: #dddddd;
         }
-        .dark-mode .history-date {
-            color: #ffffff;
+        .dark-mode .modal-close:hover {
+            color: #ff8080;
         }
         .dark-mode .empty-state {
             color: #ffffff;
@@ -392,268 +583,473 @@
             <div class="circle"></div>
             <div class="circle"></div>
         </div>
-        <h1>Work Allocation</h1>
-        <p>Track, manage and update your assigned work</p>
+        <h1>My Tasks</h1>
+        <p>View your assigned tasks and submit updates</p>
     </header>
-    <div class="dashboard">
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="panel assigned-tasks">
+                <div class="panel-header">
+                    <h2 class="panel-title">Assigned Tasks</h2>
+                </div>
+                <div class="task-grid" id="taskContainer">
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No tasks">
+                        <p>Loading your tasks...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel submit-work update-form" id="updateFormContainer">
+                <h2 class="form-title">Submit Your Work</h2>
+                <form id="updateForm" novalidate>
+                    <input type="hidden" id="selectedTaskId">
+                    <div class="form-group">
+                        <label for="workItemName" class="form-label">Work Item Name</label>
+                        <input type="text" id="workItemName" class="form-control" required placeholder="Enter Work Item name">
+                        <span id="workItemNameError" class="error-message">Please enter a work item name</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeName" class="form-label">Employee Name</label>
+                        <input type="text" id="employeeName" class="form-control" required placeholder="Enter your Name">
+                        <span id="employeeNameError" class="error-message">Please enter your name</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeId" class="form-label">Employee ID</label>
+                        <input type="text" id="employeeId" class="form-control" required placeholder="Enter Your ID (e.g., ATS0xxx)" pattern="ATS0\d{3}">
+                        <span id="employeeIdError" class="error-message">Please enter a valid employee ID in format ATS0XXX</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" required placeholder="Enter your Email (e.g., name@astrolitetech.com)">
+                        <span id="emailError" class="error-message">Please enter a valid email address</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription" class="form-label">Description</label>
+                        <textarea id="taskDescription" class="form-control" required placeholder="Describe the work" minlength="5" maxlength="500"></textarea>
+                        <span id="taskDescriptionError" class="error-message">Please provide a description (5-500 characters)</span>
+                    </div>
+                    <div class="file-input-container">
+                        <label for="uploadDoc" class="file-input-label">
+                            <span>Upload Document</span>
+                            <input type="file" id="uploadDoc" class="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
+                        </label>
+                        <div id="fileName" class="file-name">No file chosen</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskStatus" class="form-label">Work Status</label>
+                        <select id="taskStatus" class="form-control form-select" required>
+                            <option value="">Select Status</option>
+                            <option value="inprocess">In Process</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <span id="taskStatusError" class="error-message">Please select a status</span>
+                    </div>
+                    <button type="submit" class="btn btn-block">Submit Work Update</button>
+                </form>
+            </div>
+        </div>
+
         <div class="panel">
             <div class="panel-header">
-                <h2 class="panel-title">Allocated Work</h2>
+                <h2 class="panel-title">My Work History</h2>
             </div>
-            <div class="work-items" id="workItemsContainer">
-                <!-- Work items will be inserted here -->
+            <div class="history-container" id="workHistoryContainer">
+                <div class="empty-state">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
+                    <p>No work history yet. Submit your first update to see it here.</p>
+                </div>
             </div>
         </div>
-        <div class="panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Submit Your Work</h2>
+
+        <div class="modal" id="detailsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalTitle">Details</h2>
+                    <button class="modal-close" id="closeModal">×</button>
+                </div>
+                <div class="modal-body" id="modalDetails"></div>
             </div>
-            <form id="workUpdateForm">
-                <div class="form-group">
-                    <label for="task-name" class="form-label">Work Item Name</label>
-                    <input type="text" id="task-name" class="form-control" name="taskName" required minlength="5" placeholder="Enter Work Item name" maxlength="100">
-                </div>
-                <div class="error-message" id="task-name-error">Work Item name must be at least 5 characters long.</div>
-                <div class="form-group">
-                    <label for="employee-name" class="form-label">Employee Name</label>
-                    <input type="text" id="employee-name" class="form-control" name="employeeName" placeholder="Enter your Name" required 
-                           minlength="3" maxlength="100"
-                           pattern="^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$"
-                           title="Username cannot start with a space, no consecutive spaces allowed, maximum 8 spaces and 3 periods allowed.">
-                </div>
-                <div class="error-message" id="employee-name-error">Invalid employee name format.</div> 
-                <div class="form-group">
-                    <label for="employee-id" class="form-label">Employee ID</label>
-                    <input type="text" id="employee-id" class="form-control" name="employeeId" required minlength="7" maxlength="7" 
-                           placeholder="Enter Your ID" pattern="^[ATS]{3}(?!0000)[0-9]{4}$" 
-                           title="Employee ID should be in the format: 3 uppercase letters followed by 4 digits, starting from 0001 (cannot be 0000)">
-                </div>
-                <div class="error-message" id="employee-id-error">Employee ID must be in the format ABC1234.</div>
-                <div class="form-group">
-                    <label for="upload-doc" class="form-label">Upload Document</label>
-                    <input type="file" id="upload-doc" class="form-control" name="uploadDoc" required accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                           title="Acceptable file formats: PDF, DOC, DOCX, JPG, JPEG, PNG, TXT">
-                </div>
-                <div class="error-message" id="upload-doc-error">Please upload a valid file (PDF, DOC, DOCX, JPG, JPEG, PNG, TXT).</div>
-                <div class="form-group">
-                    <label for="task-status" class="form-label">Work Status</label>
-                    <select id="task-status" class="form-control form-select" name="taskStatus" required>
-                        <option value="completed">Completed</option>
-                        <option value="inprocess">In Progress</option>
-                    </select>
-                </div>
-                <div class="error-message" id="task-status-error">Please select a work status.</div>
-                <button type="submit" class="btn btn-block">Submit Work Update</button>
-            </form>
         </div>
     </div>
-    <div class="panel history-container">
-        <div class="panel-header">
-            <h2 class="panel-title" id="title">Work History</h2>
-        </div>
-        <div id="workHistoryContainer">
-            <!-- History items will be inserted here -->
-        </div>
-    </div>
+
     <script>
-        const API_BASE_URL = 'http://51.21.167.155:3051/api';
-        document.addEventListener('DOMContentLoaded', function() {
-            loadWorkItems();
-            loadHistory();
-            setupValidation();
+        const API_BASE_URL = 'http://51.20.37.61:3051/api';
+        let allTasks = [];
+        let selectedTask = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('uploadDoc').addEventListener('change', handleFileSelect);
+            document.getElementById('updateForm').addEventListener('submit', submitTaskUpdate);
+            document.getElementById('employeeId').addEventListener('input', validateEmployeeId);
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('employeeId').addEventListener('change', function() {
+                if (validateEmployeeId()) {
+                    loadTasks();
+                    loadWorkHistory();
+                }
+            });
+            document.getElementById('detailsModal').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    closeModal();
+                }
+            });
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
         });
-        async function loadWorkItems() {
-            const container = document.getElementById('workItemsContainer');
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const fileNameElement = document.getElementById('fileName');
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    fileNameElement.textContent = 'File too large (max 5MB)';
+                    fileNameElement.style.color = 'red';
+                    event.target.value = '';
+                    return;
+                }
+                const allowedTypes = [
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'image/jpeg',
+                    'image/png',
+                    'text/plain'
+                ];
+                if (!allowedTypes.includes(file.type)) {
+                    fileNameElement.textContent = 'Invalid file type (PDF, DOC, DOCX, JPG, JPEG, PNG, TXT only)';
+                    fileNameElement.style.color = 'red';
+                    event.target.value = '';
+                    return;
+                }
+                fileNameElement.textContent = `${file.name}`;
+                fileNameElement.style.color = '#777';
+            } else {
+                fileNameElement.textContent = 'No file chosen';
+                fileNameElement.style.color = '#777';
+            }
+        }
+
+        function validateEmployeeId() {
+            const input = document.getElementById('employeeId');
+            const error = document.getElementById('employeeIdError');
+            const value = input.value.trim().toUpperCase();
+            const regex = /^ATS0\d{3}$/;
+            if (!value) {
+                error.textContent = 'Please enter an employee ID';
+                error.style.display = 'block';
+                return false;
+            }
+            if (!regex.test(value)) {
+                error.textContent = 'Please enter a valid employee ID in format ATS0XXX';
+                error.style.display = 'block';
+                return false;
+            }
+            error.style.display = 'none';
+            input.value = value;
+            return true;
+        }
+
+        async function loadTasks() {
+            const employeeId = document.getElementById('employeeId').value.trim().toUpperCase();
+            const taskContainer = document.getElementById('taskContainer');
+            if (!employeeId) {
+                taskContainer.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No ID">
+                        <p>Please enter your employee ID to view tasks</p>
+                    </div>
+                `;
+                return;
+            }
             try {
-                const response = await fetch(`${API_BASE_URL}/tasks`);
+                const response = await fetch(`${API_BASE_URL}/tasks?employeeId=${employeeId}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                const tasks = await response.json();
-                if (tasks.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No work items">
-                            <h3>No work items assigned</h3>
-                            <p>You currently don't have any assigned work items</p>
+                allTasks = await response.json();
+                if (allTasks.length === 0) {
+                    taskContainer.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No tasks">
+                            <p>You don't have any assigned tasks yet.</p>
                         </div>
                     `;
                     return;
                 }
-                container.innerHTML = '';
-                tasks.forEach(task => {
-                    const workCard = document.createElement('div');
-                    workCard.className = 'work-card';
+                taskContainer.innerHTML = '';
+                allTasks.forEach(task => {
+                    const taskCard = document.createElement('div');
+                    taskCard.className = 'task-card';
                     let statusBadge = '';
                     const status = task.status || 'assigned';
                     if (status === 'pending') {
                         statusBadge = '<span class="status-badge status-pending">Pending</span>';
                     } else if (status === 'inprocess') {
-                        statusBadge = '<span class="status-badge status-inprocess">In Progress</span>';
+                        statusBadge = '<span class="status-badge status-inprocess">In Process</span>';
                     } else if (status === 'completed') {
                         statusBadge = '<span class="status-badge status-completed">Completed</span>';
                     } else {
                         statusBadge = '<span class="status-badge status-assigned">Assigned</span>';
                     }
-                    workCard.innerHTML = `
+                    taskCard.innerHTML = `
                         ${statusBadge}
-                        <div class="work-project">HRMS Portal</div>
-                        <h3 class="work-title">${task.task_name}</h3>
-                        <div class="work-data">
-                            <div><i>📅</i> Assigned: ${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}</div>
-                            <div><i>⏰</i> Deadline: ${task.deadline ? formatDate(task.deadline) : 'Not set'}</div>
+                        <div class="task-info">HRMS Portal</div>
+                        <h3 class="task-title">${task.task_name || 'Untitled Task'}</h3>
+                        <div class="task-dates">
+                            <div><i>Assigned:</i> ${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}</div>
+                            <div><i>Deadline:</i> ${task.deadline ? formatDate(task.deadline) : 'Not set'}</div>
                         </div>
+                      <a 
+    class="task-view-link" 
+    onclick="viewTaskDetails('${task.id}')" 
+    style="background: none; border: none; font-size: 18px; color: blue; text-decoration: none; cursor: pointer; display: inline-block; margin-top: 10px; "        onmouseover="this.style.textDecoration='underline'" 
+        onmouseout="this.style.textDecoration='none'"
+>
+    View Details
+</a>
+
+
                     `;
-                    container.appendChild(workCard);
+                    taskContainer.appendChild(taskCard);
                 });
             } catch (err) {
-                console.error('Error loading work items:', err);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No work items">
-                        <h3>Error loading work items</h3>
-                        <p>Unable to load assigned work items: ${err.message}</p>
+                console.error('Error loading tasks:', err);
+                taskContainer.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="Error">
+                        <p>Error loading tasks: ${err.message}</p>
                     </div>
                 `;
             }
         }
-        async function loadHistory() {
+
+        async function loadWorkHistory() {
+            const employeeId = document.getElementById('employeeId').value.trim().toUpperCase();
             const historyContainer = document.getElementById('workHistoryContainer');
+            if (!employeeId) {
+                historyContainer.innerHTML = `
+                    <div class="empty-state">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No ID">
+                        <p>Please enter your employee ID to view work history</p>
+                    </div>
+                `;
+                return;
+            }
             try {
-                const response = await fetch(`${API_BASE_URL}/task-history`);
+                const response = await fetch(`${API_BASE_URL}/task-history?employeeId=${employeeId}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                const taskHistory = await response.json();
-                if (taskHistory.length === 0) {
+                const workHistory = await response.json();
+                if (workHistory.length === 0) {
                     historyContainer.innerHTML = `
                         <div class="empty-state">
                             <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
-                            <h3>No work history yet</h3>
-                            <p>Your submitted work updates will appear here</p>
+                            <p>No work history yet. Submit your first update to see it here.</p>
                         </div>
                     `;
                     return;
                 }
                 historyContainer.innerHTML = '';
-                taskHistory.forEach(task => {
+                workHistory.forEach(item => {
                     const historyItem = document.createElement('div');
                     historyItem.className = 'history-item';
                     let statusClass = '';
-                    if (task.task_status === 'pending') {
-                        statusClass = 'status-pending';
-                    } else if (task.task_status === 'inprocess') {
+                    let statusText = '';
+                    if (item.task_status === 'inprocess') {
                         statusClass = 'status-inprocess';
-                    } else {
+                        statusText = 'In Process';
+                    } else if (item.task_status === 'completed') {
                         statusClass = 'status-completed';
+                        statusText = 'Completed';
+                    } else {
+                        statusClass = 'status-assigned';
+                        statusText = 'Assigned';
                     }
                     historyItem.innerHTML = `
                         <div class="history-info">
-                            <h4>${task.task_name}</h4>
-                            <p>HRMS Portal • ${task.employee_name} (${task.employee_id})</p>
-                            <span class="status-badge ${statusClass}">${task.task_status}</span>
+                            <h4>${item.task_name || 'Untitled Work Item'}</h4>
+                            <p>HRMS Portal • ${item.employee_name || 'Unknown'} (${item.employee_id || 'No ID'})</p>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
                         </div>
-                        <div class="history-date">${formatDate(task.allocated_time)}</div>
+                       <div style="margin-top: 10px; text-align: center;">
+    <a 
+        class="history-view-link" 
+        onclick="viewWorkHistoryDetails('${item.id}')" 
+        style="background: none; border: none; font-size: 18px; color: blue; text-decoration: none; cursor: pointer; display: inline-block;"
+        onmouseover="this.style.textDecoration='underline'" 
+        onmouseout="this.style.textDecoration='none'"
+    >
+        View Details
+    </a>
+    <div class="history-date" style="font-size: 14px; color: #555; margin-top: 10px;">
+        ${item.allocated_time ? formatDate(item.allocated_time) : 'Not set'}
+    </div>
+</div>
+
+
                     `;
                     historyContainer.appendChild(historyItem);
                 });
             } catch (err) {
-                console.error('Error loading history:', err);
+                console.error('Error loading work history:', err);
                 historyContainer.innerHTML = `
                     <div class="empty-state">
-                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No history">
-                        <h3>Error loading history</h3>
-                        <p>Unable to load work history: ${err.message}</p>
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="Error">
+                        <p>Error loading work history: ${err.message}</p>
                     </div>
                 `;
             }
         }
-        async function saveCompletedTask(event) {
-            event.preventDefault();
-            if (!validateForm()) {
+
+        function viewTaskDetails(taskId) {
+            const task = allTasks.find(task => task.id === taskId);
+            if (!task) {
+                alert('Task not found');
                 return;
             }
-            const form = document.getElementById('workUpdateForm');
-            const formData = new FormData(form);
+            document.getElementById('modalTitle').innerHTML = `${task.task_name || 'Untitled Task'}`;
+            const modalBody = document.getElementById('modalDetails');
+            modalBody.innerHTML = `
+                <p><strong>Task Name:</strong> ${task.task_name || 'Untitled Task'}</p>
+                <p><strong>Employee Name:</strong> ${task.employee_name || 'Not assigned'}</p>
+                <p><strong>Employee ID:</strong> ${task.employee_id || 'Not set'}</p>
+                <p><strong>Email:</strong> ${task.email || 'Not set'}</p>
+                <p><strong>Description:</strong> ${task.task_description || 'No description provided'}</p>
+                <p><strong>Status:</strong> ${task.status ? task.status.charAt(0).toUpperCase() + task.status.slice(1) : 'Assigned'}</p>
+                <p><strong>Start Date:</strong> ${task.allocated_date ? formatDate(task.allocated_date) : 'Not set'}</p>
+                <p><strong>End Date:</strong> ${task.deadline ? formatDate(task.deadline) : 'Not set'}</p>
+            `;
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        async function viewWorkHistoryDetails(historyId) {
             try {
+                const response = await fetch(`${API_BASE_URL}/task-history/${historyId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const item = await response.json();
+                document.getElementById('modalTitle').innerHTML = `${item.task_name || 'Untitled Work Item'}`;
+                const modalBody = document.getElementById('modalDetails');
+                const statusText = item.task_status === 'inprocess' ? 'In Process' : item.task_status === 'completed' ? 'Completed' : 'Assigned';
+                modalBody.innerHTML = `
+                    <p><strong>Item Name:</strong> ${item.task_name || 'Untitled Work Item'}</p>
+                    <p><strong>Employee Name:</strong> ${item.employee_name || 'Unknown'}</p>
+                    <p><strong>Employee ID:</strong> ${item.employee_id || 'No ID'}</p>
+                    <p><strong>Email:</strong> ${item.email || 'No email'}</p>
+                    <p><strong>Description:</strong> ${item.description || 'No description provided'}</p>
+                    <p><strong>Status:</strong> ${statusText}</p>
+                    <p><strong>Allocated Time:</strong> ${item.allocated_time ? formatDate(item.allocated_time) : 'Not set'}</p>
+<p>
+    <strong>Uploaded Document:</strong> 
+    ${item.has_file ? `<a 
+        class="file-view-link" 
+        onclick="viewHistoryFile('${item.id}')" 
+        style="background: none; border: none; font-size: 18px; color: blue; text-decoration: none; cursor: pointer; display: inline-block; margin-left: 10px;"
+        onmouseover="this.style.textDecoration='underline'" 
+        onmouseout="this.style.textDecoration='none'"
+    >View File</a>` : 'No file attached'}
+</p>
+
+                `;
+                document.getElementById('detailsModal').style.display = 'flex';
+            } catch (err) {
+                console.error('Error loading work history details:', err);
+                alert(`Error loading details: ${err.message}`);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        async function submitTaskUpdate(event) {
+            event.preventDefault();
+            const isValid = [
+                validateWorkItemName(),
+                validateEmployeeName(),
+                validateEmployeeId(),
+                validateEmail(),
+                validateTaskDescription(),
+                validateTaskStatus()
+            ].every(valid => valid);
+            if (!isValid) {
+                alert('Please correct the errors in the form before submitting.');
+                return;
+            }
+            try {
+                const formData = new FormData();
+                formData.append('taskName', document.getElementById('workItemName').value.trim());
+                formData.append('employeeName', document.getElementById('employeeName').value.trim());
+                formData.append('employeeId', document.getElementById('employeeId').value.trim().toUpperCase());
+                formData.append('email', document.getElementById('email').value.trim());
+                formData.append('description', document.getElementById('taskDescription').value.trim());
+                formData.append('taskStatus', document.getElementById('taskStatus').value);
+                const fileInput = document.getElementById('uploadDoc');
+                if (fileInput.files.length > 0) {
+                    formData.append('uploadDoc', fileInput.files[0]);
+                }
                 const response = await fetch(`${API_BASE_URL}/task-history`, {
                     method: 'POST',
                     body: formData
                 });
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Failed to submit work update (Status: ${response.status})`);
                 }
-                const result = await response.json();
-                form.reset();
-                await loadHistory();
                 alert('Work update submitted successfully!');
+                document.getElementById('updateForm').reset();
+                document.getElementById('fileName').textContent = 'No file chosen';
+                loadWorkHistory();
             } catch (err) {
                 console.error('Error submitting work update:', err);
-                alert(`Error submitting work update: ${err.message}`);
+                const errorMessage = err.message.includes('Failed to fetch') 
+                    ? 'Unable to connect to server. Please check if the server is running.'
+                    : err.message;
+                alert(`Error submitting work update: ${errorMessage}`);
             }
         }
-        function setupValidation() {
-            const taskNameInput = document.getElementById('task-name');
-            const employeeNameInput = document.getElementById('employee-name');
-            const employeeIdInput = document.getElementById('employee-id');
-            const uploadDocInput = document.getElementById('upload-doc');
-            const taskStatusInput = document.getElementById('task-status');
-            const taskNameError = document.getElementById('task-name-error');
-            const employeeNameError = document.getElementById('employee-name-error');
-            const employeeIdError = document.getElementById('employee-id-error');
-            const uploadDocError = document.getElementById('upload-doc-error');
-            const taskStatusError = document.getElementById('task-status-error');
-            taskNameInput.addEventListener('input', function() {
-                taskNameError.style.display = this.value.length >= 5 ? 'none' : 'block';
-            });
-            employeeNameInput.addEventListener('input', function() {
-                const pattern = /^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$/;
-                employeeNameError.style.display = pattern.test(this.value.trim()) ? 'none' : 'block';
-            });
-            employeeIdInput.addEventListener('input', function() {
-                const pattern = /^[ATS]{3}(?!0000)[0-9]{4}$/;
-                employeeIdError.style.display = pattern.test(this.value.trim()) ? 'none' : 'block';
-            });
-            uploadDocInput.addEventListener('change', function() {
-                uploadDocError.style.display = this.files.length > 0 ? 'none' : 'block';
-            });
-            taskStatusInput.addEventListener('change', function() {
-                taskStatusError.style.display = this.value ? 'none' : 'block';
-            });
-            document.getElementById('workUpdateForm').addEventListener('submit', saveCompletedTask);
+
+        async function viewHistoryFile(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/task-history/${id}/file`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const contentType = response.headers.get('content-type');
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                if (contentType && contentType.includes('image/')) {
+                    window.open(url, '_blank');
+                } else if (contentType && contentType.includes('pdf')) {
+                    window.open(url, '_blank');
+                } else if (contentType && contentType.includes('text/plain')) {
+                    const text = await blob.text();
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write(`<pre>${text}</pre>`);
+                } else {
+                    alert('This file type cannot be displayed in the browser or no content type is specified. It will be downloaded instead.');
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `document_${id}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+            } catch (err) {
+                console.error('Error viewing file:', err);
+                alert(`Error viewing file: ${err.message}`);
+            }
         }
-        function validateForm() {
-            let isValid = true;
-            const taskName = document.getElementById('task-name').value;
-            if (taskName.length < 5) {
-                document.getElementById('task-name-error').style.display = 'block';
-                isValid = false;
-            }
-            const employeeName = document.getElementById('employee-name').value;
-            const namePattern = /^[A-Za-z]+(?:\.[A-Za-z]+)*(?: [A-Za-z]+)*(?:\.[A-Za-z]+){0,3}$/;
-            if (!namePattern.test(employeeName.trim())) {
-                document.getElementById('employee-name-error').style.display = 'block';
-                isValid = false;
-            }
-            const employeeId = document.getElementById('employee-id').value;
-            const idPattern = /^[ATS]{3}(?!0000)[0-9]{4}$/;
-            if (!idPattern.test(employeeId.trim())) {
-                document.getElementById('employee-id-error').style.display = 'block';
-                isValid = false;
-            }
-            const uploadDoc = document.getElementById('upload-doc').files;
-            if (uploadDoc.length === 0) {
-                document.getElementById('upload-doc-error').style.display = 'block';
-                isValid = false;
-            }
-            const taskStatus = document.getElementById('task-status').value;
-            if (!taskStatus) {
-                document.getElementById('task-status-error').style.display = 'block';
-                isValid = false;
-            }
-            return isValid;
-        }
+
         function formatDate(dateString) {
             if (!dateString) return 'Invalid date';
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -663,14 +1059,105 @@
                 return 'Invalid date';
             }
         }
-        window.onload = function () {
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            } else {
-                document.body.classList.remove('dark-mode');
+
+        function validateWorkItemName() {
+            const input = document.getElementById('workItemName');
+            const error = document.getElementById('workItemNameError');
+            const value = input.value.trim();
+            if (!value) {
+                error.textContent = 'Please enter a work item name';
+                error.style.display = 'block';
+                return false;
             }
-        };
+            error.style.display = 'none';
+            return true;
+        }
+
+        function validateEmployeeName() {
+            const input = document.getElementById('employeeName');
+            const error = document.getElementById('employeeNameError');
+            const value = input.value.trim();
+            if (!value) {
+                error.textContent = 'Please enter your name';
+                error.style.display = 'block';
+                return false;
+            }
+            error.style.display = 'none';
+            return true;
+        }
+
+        function validateEmail() {
+            const input = document.getElementById('email');
+            const error = document.getElementById('emailError');
+            const value = input.value.trim();
+            const regex = /^[a-zA-Z][a-zA-Z0-9._-]*[a-zA-Z0-9]@astrolitetech\.com$/;
+            if (!value) {
+                error.textContent = 'Please enter an email address';
+                error.style.display = 'block';
+                return false;
+            }
+            if (!regex.test(value)) {
+                error.textContent = 'Please enter a valid email address';
+                error.style.display = 'block';
+                return false;
+            }
+            error.style.display = 'none';
+            return true;
+        }
+
+        function validateTaskDescription() {
+            const input = document.getElementById('taskDescription');
+            const error = document.getElementById('taskDescriptionError');
+            const value = input.value.trim();
+            if (!value || value.length < 5) {
+                error.textContent = 'Please provide a description (5-500 characters)';
+                error.style.display = 'block';
+                return false;
+            }
+            error.style.display = 'none';
+            return true;
+        }
+
+        function validateTaskStatus() {
+            const input = document.getElementById('taskStatus');
+            const error = document.getElementById('taskStatusError');
+            const value = input.value;
+            if (!value) {
+                error.textContent = 'Please select a status';
+                error.style.display = 'block';
+                return false;
+            }
+            error.style.display = 'none';
+            return true;
+        }
+
+        function validateFileUpload() {
+            const fileInput = document.getElementById('uploadDoc');
+            const fileNameElement = document.getElementById('fileName');
+            if (fileInput.files.length === 0) {
+                return true;
+            }
+            const file = fileInput.files[0];
+            if (file.size > 5 * 1024 * 1024) {
+                fileNameElement.textContent = 'File too large (max 5MB)';
+                fileNameElement.style.color = 'red';
+                return false;
+            }
+            const allowedTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/png',
+                'text/plain'
+            ];
+            if (!allowedTypes.includes(file.type)) {
+                fileNameElement.textContent = 'Invalid file type (PDF, DOC, DOCX, JPG, JPEG, PNG, TXT only)';
+                fileNameElement.style.color = 'red';
+                return false;
+            }
+            return true;
+        }
     </script>
 </body>
 </html>
